@@ -47,10 +47,10 @@ class Main_model extends CI_Model {
 
       return FALSE;
     }
-
+    
     $data = array(
-      'username' => $this->existingusername(),
-      'password' => $this->existingcode(),
+      'username' => $this->input->post('user'),
+      'password' => $this->input->post('pass'),
       'queue_name' => "none",
       'current' => 0,
       'display_name' => "none",

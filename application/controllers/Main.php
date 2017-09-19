@@ -88,6 +88,7 @@
     }
     
     //ongoing
+    //this
     public function send_notification(){
       
       $serviceAccount = ServiceAccount::fromJsonFile(__DIR__.'/firebase_credentials.json');
@@ -99,7 +100,8 @@
         ->getDatabase();
         
       $result = $database
-        ->getReference('token')
+        //->getReference('/token/')
+        ->getReference('queue/'+qname+'/queuer/'+qnum)
         ->getValue();
       
       $tokens = array();

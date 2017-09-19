@@ -201,6 +201,7 @@
     public function next(){
 
       if($this->main_model->getcurrentservicenum() < $this->main_model->getdeployno()){
+        $this->send_notification();
         echo json_encode(array(
           'servicenum' => $this->main_model->incrementcurrent(),
           'idnum' => $this->main_model->incrementid(),
@@ -213,6 +214,63 @@
           'qname' =>$this->main_model->getqueuename(),
           'max' => TRUE));
       }
+    }
+    
+    //ongoing
+    function send ($tokens, $message){
+      $url = 'https://fcm.googleapis.com/fcm/send';
+      $fields = array(
+         'registration_ids' => $tokens,
+         'data' => $message
+        );
+
+      $headers = array(
+        'Authorization:key = AAAAACPXaDU:APA91bEmmrQYSw1Is1yq8s_AM81AouVuB6-fCcYBPjcDSOQtEcGg1kg04W_fxMRLuM3YM3jtId3QQpnqWZxsitdQoL0fprdYwYaMDfooJPxAWxlznzQ0HOX4V7gV0ifseAEaorR4rhUE',
+        'Content-Type: application/json'
+        );
+
+       $ch = curl_init();
+         curl_setopt($ch, CURLOPT_URL, $url);
+         curl_setopt($ch, CURLOPT_POST, true);
+         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+         curl_setopt ($ch, CURLOPT_SSL_VERIFYHOST, 0);  
+         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+         $result = curl_exec($ch);           
+         if ($result === FALSE) {
+             die('Curl failed: ' . curl_error($ch));
+         }
+         curl_close($ch);
+         return $result;
+    }
+    
+    //ongoing
+    //this
+    public function send_notification(){
+      
+      $serviceAccount = ServiceAccount::fromJsonFile(__DIR__.'/firebase_credentials.json');
+      $firebase = (new Factory)
+        ->withServiceAccount($serviceAccount)
+        ->create();
+        
+      $database = $firebase
+        ->getDatabase();
+        
+      $result = $database
+        //->getReference('/token/')
+        ->getReference('queue/'+$this->main_model->getqueuename()+'/queuer/'+$this->main_model->getcurrentservicenum())
+        ->getValue();
+      
+      $tokens = array();
+      
+      foreach ($result as $row){
+        $tokens[] = $row;
+      }
+      
+      $message = array("message" => " FCM PUSH NOTIFICATION TEST MESSAGE");
+      $message_status = $this->send($tokens, $message);
+      echo $message_status;
     }
 
     //ok
