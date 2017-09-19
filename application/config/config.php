@@ -26,7 +26,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 // $config['base_url'] = 'http://192.168.254.101/client';
 // $config['base_url'] = 'http://192.168.1.13/client';
 //$config['base_url'] = 'http://localhost/client';
-$config['base_url'] = 'https://smartqclerk.herokuapp.com/';
+$config['base_url'] = 'https://smartqclient.herokuapp.com/';
 
 /*
 |--------------------------------------------------------------------------
